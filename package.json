@@ -1,0 +1,30 @@
+{
+  "name": "road-to-the-games",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "data": "python tools/tournaments.py",
+    "audit": "python tools/audit.py",
+    "update": "python tools/update.py",
+    "publish": "python tools/publish.py",
+    "gaps": "python tools/gaps.py",
+    "flags": "python tools/flags.py",
+    "medals": "python tools/medals.py",
+    "draft": "python tools/draft.py"
+  },
+  "dependencies": {
+    "@fontsource/heebo": "^5.3.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^7.18.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "flag-icons": "^7.5.0",
+    "vite": "^5.4.2"
+  }
+}

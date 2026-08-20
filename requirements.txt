@@ -1,0 +1,8 @@
+# Everything the data pipeline needs. GitHub Actions installs these before running
+# tools/tournaments.py, so an updated spreadsheet turns into an updated site with no
+# Python on your own machine at all.
+#
+# Pinned loosely: these are stable libraries and a surprise major version is more likely
+# to break the build than an old minor version is.
+pandas>=2.0
+openpyxl>=3.1

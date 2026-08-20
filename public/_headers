@@ -1,0 +1,21 @@
+# Security headers for Netlify and Cloudflare Pages. Netlify and Cloudflare read this
+# file automatically; on GitHub Pages headers cannot be set, so the meta CSP in
+# index.html is what applies there.
+#
+# frame-ancestors and X-Frame-Options are the reason this file exists at all: a <meta>
+# CSP cannot set them, so without it any site could iframe the app and overlay it.
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'self'; form-action 'none'; object-src 'none'; frame-ancestors 'none'
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), interest-cohort=()
+  Cross-Origin-Opener-Policy: same-origin
+
+# Hashed asset filenames change whenever the contents change, so they can be cached hard.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# The entry point must not be, or a redeploy would never reach anyone.
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate

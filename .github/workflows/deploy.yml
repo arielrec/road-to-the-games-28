@@ -1,0 +1,81 @@
+# Build and publish the site whenever anything changes on main.
+#
+# The point of doing it here rather than on your machine: the spreadsheet is the source of
+# truth, and this runs the full pipeline from it — audit, convert, build, publish. So
+# updating the site can be nothing more than replacing the .xlsx through GitHub's website.
+# No terminal, no Node, no Python installed anywhere.
+#
+# The audit result is written to the run summary rather than failing the build. A date
+# that looks wrong is worth seeing, but it should not stop a deploy — you may already know
+# about it, and a site with one odd date beats no site.
+
+name: Build and deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:        # lets you re-run it by hand from the Actions tab
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: deploy
+  cancel-in-progress: true   # a second push supersedes one still building
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -r requirements.txt
+
+      # Regenerate the JSON from the spreadsheet. If the workbook is malformed this fails
+      # here, before anything is published, and the live site is left untouched.
+      - name: Convert the spreadsheet
+        run: python tools/tournaments.py
+
+      # Reported, never fatal — see the note at the top of this file.
+      - name: Check the data for impossible dates
+        continue-on-error: true
+        run: |
+          echo '## Data check' >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          python tools/audit.py >> "$GITHUB_STEP_SUMMARY" 2>&1
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+
+      # Fail loudly rather than publishing an empty folder: a build that "succeeds" but
+      # writes nothing would quietly replace the live site with a blank page.
+      - name: Sanity-check the build
+        run: |
+          test -f dist/index.html || { echo 'No index.html in dist'; exit 1; }
+          test -d dist/assets   || { echo 'No assets folder in dist'; exit 1; }
+          echo "dist contains $(find dist -type f | wc -l) files, $(du -sh dist | cut -f1)"
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

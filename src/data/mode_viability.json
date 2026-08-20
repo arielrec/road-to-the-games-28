@@ -1,0 +1,34 @@
+{
+ "All-time": {
+  "cells": 1,
+  "usable": 1,
+  "valid": 11813,
+  "playable": 2269,
+  "hard": 312,
+  "podiums": 1
+ },
+ "By sport": {
+  "cells": 54,
+  "usable": 46,
+  "valid": 29176,
+  "playable": 18412,
+  "hard": 1729,
+  "podiums": 30
+ },
+ "By year": {
+  "cells": 31,
+  "usable": 31,
+  "valid": 39615,
+  "playable": 23133,
+  "hard": 2322,
+  "podiums": 31
+ },
+ "Sport + year": {
+  "cells": 723,
+  "usable": 579,
+  "valid": 32568,
+  "playable": 27577,
+  "hard": 1055,
+  "podiums": 280
+ }
+}

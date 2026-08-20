@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b1020" />
+
+    <!-- The app has no backend and no user input, so the realistic risk is not an attack
+         on a server but a bad link or a compromised CDN turning into script execution on
+         this origin. Locking script-src to 'self' means nothing outside these files can
+         run, whatever ends up in the data. style-src needs 'unsafe-inline' because React
+         writes inline styles; style injection is far less dangerous than script.
+         frame-ancestors cannot be set from a meta tag — see public/_headers. -->
+    <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self';
+      script-src 'self';
+      style-src 'self' 'unsafe-inline';
+      font-src 'self';
+      img-src 'self' data:;
+      connect-src 'self';
+      base-uri 'self';
+      form-action 'none';
+      object-src 'none'
+    " />
+    <title>Road to the Games</title>
+    <meta name="description" content="Every world and continental event on the road to LA28 — 1,338 tournaments across 24 sports, plus five Olympic trivia games." />
+    <link rel="icon" type="image/png" href="./src/assets/icon.png" />
+    <link rel="apple-touch-icon" href="./icon-192.png" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+
+    <!-- The app has a "copy link" button on every event, so a pasted link needs to look
+         like something. Without these it pastes as a bare URL with no title or image. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Road to the Games" />
+    <meta property="og:description" content="Every world and continental event on the road to LA28 — 1,338 tournaments across 24 sports, plus five Olympic trivia games." />
+    <meta property="og:image" content="./og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Road to the Games" />
+    <meta name="twitter:description" content="Every world and continental event on the road to LA28." />
+    <meta name="twitter:image" content="./og-image.png" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
