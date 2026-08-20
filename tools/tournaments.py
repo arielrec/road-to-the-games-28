@@ -258,7 +258,12 @@ def vocab(key):
     return [{'v': k, 'n': n} for k, n in c.most_common()]
 
 meta = {
-    'generated': pd.Timestamp.now('UTC').isoformat(timespec='seconds'),
+    # The workbook's own modified time, not "now". Two reasons: it is the honest answer
+    # to "how current is this data", and it makes the output reproducible — with a clock
+    # in here, every single run rewrote meta.json, so `npm run publish` could never say
+    # "nothing changed" and every update produced a commit of pure noise.
+    'generated': pd.Timestamp(os.path.getmtime(os.path.join(SRC, MASTER)), unit='s',
+                              tz='UTC').isoformat(timespec='seconds'),
     'count': len(rows), 'sportCount': len(sports),
     'undated': sum(1 for t in rows if not t['start']),
     'years': sorted({t['year'] for t in rows if t['year']}),

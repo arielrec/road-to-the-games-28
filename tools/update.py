@@ -16,9 +16,8 @@ It deliberately does NOT rebuild or deploy. Read the diff first: a spreadsheet e
 was meant to add three events and instead removed four hundred is exactly the mistake
 this is here to catch, and it is much easier to fix before it is live.
 
-When the diff looks right:
-
-    npm run build          then upload the dist/ folder
+When the diff looks right, `npm run publish` commits and pushes it, and the live site
+rebuilds itself. See DEPLOY.md.
 """
 import json
 import os
@@ -110,7 +109,9 @@ def main():
     subprocess.run([sys.executable, os.path.join(ROOT, 'tools', 'audit.py')] + sys.argv[1:])
 
     print()
-    print('Happy with all of that?  npm run build   then upload the dist/ folder.')
+    print('Happy with all of that?  npm run publish   — commits, pushes, and the site')
+    print('rebuilds itself. Or replace the .xlsx on github.com and skip the terminal.')
+    print('See DEPLOY.md.')
 
 
 if __name__ == '__main__':

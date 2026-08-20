@@ -1,123 +1,185 @@
-# Putting the site online
+# Putting the site online, and keeping it updated
 
-The app is a folder of plain files. There is no server to run, no database, nothing to
-keep alive — a host just has to hand those files to whoever asks. That is why it can be
-hosted free, permanently, with no card on file.
+Set this up once — about fifteen minutes — and from then on updating the live site means
+**replacing one file in a web page**. No terminal, no uploading, no build step, nothing
+installed on your computer. You can do it from a phone.
 
-Everything below assumes you have run:
+If you would rather just see it live in two minutes and worry about this later, skip to
+[The two-minute version](#the-two-minute-version) at the bottom. But the setup below is
+the one worth doing, and doing it first saves redoing it.
+
+---
+
+## How it will work when it is done
 
 ```
-npm run build
+  You replace data/…Master.xlsx on github.com
+                    │
+                    ▼
+  GitHub runs the pipeline automatically:
+      convert the spreadsheet → check the dates → build the site
+                    │
+                    ▼
+  The live site updates. Two to three minutes, start to finish.
 ```
 
-which fills the **`dist`** folder. That folder *is* the website. Nothing outside it needs
-to be uploaded, ever.
+The spreadsheet is the source of truth and it lives *inside* the project, so there is
+never a question of which copy is current or whether someone forgot to rebuild.
 
 ---
 
-## The fastest way — two minutes, no account
+## Step 1 — Put the project on GitHub
 
-1. Go to **https://app.netlify.com/drop**
-2. Drag the whole **`dist`** folder onto the page.
-3. Wait about twenty seconds.
+The project is already a git repository with everything committed. It just needs
+somewhere to live.
 
-You get a live address like `https://sparkly-donut-a1b2c3.netlify.app` and the site is
-public. Send that link to anyone.
+1. Make a free account at **https://github.com** if you do not have one.
+2. Go to **https://github.com/new**.
+   - **Repository name**: `road-to-the-games`
+   - **Public** or **Private** — either works. The *site* is public either way; this only
+     controls who can see the source and the spreadsheet.
+   - Do **not** tick "Add a README" or any other initialise option. The project already
+     has its files and an empty repository is what we want.
+   - Click **Create repository**.
+3. GitHub then shows a page with commands. Ignore most of it. Open a terminal in the
+   project folder and run the two lines it shows under *"…or push an existing repository"*.
+   They look like this, with your username:
 
-The catch: without an account the site expires after an hour. Sign up (free, GitHub or
-email) while it is open and it becomes permanent, and you can rename it to something like
-`road-to-the-games.netlify.app`.
+```
+git remote add origin https://github.com/YOUR-USERNAME/road-to-the-games.git
+git push -u origin main
+```
 
-Use this to see it live today. If you like it, do the next section properly.
-
----
-
-## The one I would actually use — Cloudflare Pages
-
-Free, no bandwidth limit, and it applies the security headers the app ships with.
-
-1. Make a free account at **https://dash.cloudflare.com**
-2. In the sidebar: **Workers & Pages** → **Create** → **Pages** →
-   **Upload assets** (not "Connect to Git" — that comes later if you want it).
-3. Name the project, e.g. `road-to-the-games`.
-4. Drag the **`dist`** folder in. Click **Deploy site**.
-
-Live at `https://road-to-the-games.pages.dev` within a minute.
-
-**To update it later**: same page → **Create new deployment** → drag the new `dist`
-folder. The old version stays available at its own address, so if an update goes wrong you
-can point people back at the previous one while you fix it.
-
-### Why this one
-
-The app ships a `public/_headers` file that ends up in `dist`. Cloudflare and Netlify read
-it automatically and apply the protections described in ATTRIBUTION.md — most importantly
-`frame-ancestors`, which stops another site from embedding yours inside a hidden frame.
-
-**GitHub Pages cannot set headers at all.** It will host the app perfectly well and the
-in-page CSP still applies, but that one protection is silently lost. If you specifically
-want GitHub Pages, that is the trade-off.
+The first time, GitHub asks you to sign in. On Windows a browser window opens — sign in
+there and it remembers you from then on.
 
 ---
 
-## Your own domain name
+## Step 2 — Turn on the automatic build
 
-Both hosts do this free — you only pay for the name itself, roughly $10-15 a year from
-Namecheap, Cloudflare Registrar or Porkbun.
+1. In your new repository on GitHub, click **Settings** (top right of the repo, not your
+   account settings).
+2. In the left sidebar, click **Pages**.
+3. Under **Source**, change the dropdown from *Deploy from a branch* to
+   **GitHub Actions**.
 
-On Cloudflare Pages: your project → **Custom domains** → **Set up a domain**. If you
-bought the name at Cloudflare it is two clicks. Elsewhere, they show you two DNS records
-to paste into your registrar. HTTPS is issued automatically and free.
+That is the whole configuration. There is nothing to fill in and nothing to save.
 
-A name is worth it if you plan to share this widely. `roadtothegames.com` is a very
-different thing to send someone than `sparkly-donut-a1b2c3.netlify.app`.
+4. Click the **Actions** tab at the top. You should see a run called *Build and deploy*
+   already in progress from your push. It takes two to three minutes.
 
----
+When the tick turns green, your site is live at:
 
-## Automatic updates, if you get tired of dragging folders
+```
+https://YOUR-USERNAME.github.io/road-to-the-games/
+```
 
-Once the routine of "edit spreadsheet → `npm run update` → `npm run build` → drag folder"
-gets old, connect a Git repository and the last two steps happen by themselves.
-
-1. Put the project on GitHub (a private repository is fine — the site is still public).
-2. Cloudflare Pages → **Connect to Git** → pick the repository.
-3. Build command: `npm run build`. Output directory: `dist`.
-
-After that, every push rebuilds and redeploys the site on its own. Your update routine
-becomes: edit the spreadsheet, `npm run update`, read the report, commit, push.
-
-Worth knowing: the build then runs on Cloudflare's machines, which have Node but **not
-Python or pandas** — so `npm run update` still has to run on your computer, and the
-generated `src/data/*.json` must be committed. That is already how the project works: the
-JSON files are checked in, not generated at deploy time.
+Settings → Pages shows the exact address once the first deploy finishes.
 
 ---
 
-## Before you send the link to anyone
+## Step 3 — Updating it, forever after
 
-- Open it on a phone, not just a laptop. The bottom navigation and the calendar are the
-  two places where a phone behaves differently.
-- Try the Hebrew toggle on the live site once. It flips the whole layout right-to-left.
-- Paste the link into WhatsApp or Slack and check the preview card appears — that is the
-  `og-image.png` in `dist`.
-- Read **ATTRIBUTION.md** once more. The pictograms question is settled, but the wording
-  you use to describe the app publicly is the remaining thing to get right.
+### The easy way — no terminal at all
+
+1. On GitHub, open the **`data`** folder in your repository.
+2. Click **Add file** → **Upload files**.
+3. Drag your edited `.xlsx` in. It must keep the same filename.
+4. Type a short note in the box — "added 2027 judo events" — and click
+   **Commit changes**.
+
+That is it. The **Actions** tab shows the rebuild running, and two or three minutes later
+the live site has your new data.
+
+Click into the finished run and you get a **Data check** report: how many events, and
+anything that looks impossible — a date spanning a year, a week-long championship stored
+as a single day, a far-future event with an invented exact date.
+
+### The terminal way — if you want to see the diff first
+
+Replace `data/…Master.xlsx` on your computer, then:
+
+```
+npm run publish
+```
+
+or double-click **`publish.bat`** on Windows. It regenerates the data, shows you exactly
+what your edit did, and asks before publishing:
+
+```
+12 added   0 removed   3 modified   (1338 → 1350 events)
+
+  ADDED (12):
+    + 2027-03-14  Judo   2027 Judo Grand Slam Tbilisi
+  MODIFIED (3):
+    ~ 2027 Fencing World Championship
+        start: '2027-07-20' → '2027-07-24'
+
+Publish these changes to the live site? [y/N]
+```
+
+**Read the removed list.** An edit meant to add three events that instead removes four
+hundred is precisely what this prompt exists to catch.
+
+`npm run update` does the same without publishing, if you only want to look.
 
 ---
 
-## If something looks broken once it is live
+## A proper domain name
 
-**Blank page, or everything unstyled.** Almost always a partial upload — the `assets`
-folder did not go up with `index.html`. Re-upload the whole `dist` folder.
+GitHub Pages supports custom domains free, with automatic HTTPS. You pay only for the name
+— roughly $10–15 a year from Cloudflare Registrar, Namecheap or Porkbun.
 
-**A link into the app 404s.** Should not happen: the app uses `#` addresses
-(`/#/calendar`) precisely so no server configuration is needed. If you see it, something
-rewrote the URL — check you did not enable a "single page app" redirect rule that strips
-the `#`.
+Repository **Settings → Pages → Custom domain**, type the name, and GitHub tells you which
+DNS records to add at your registrar. Tick **Enforce HTTPS** once it goes green.
 
-**An update did not appear.** `index.html` is set to never cache, but browsers can be
-stubborn. Reload with Ctrl+Shift+R once. If it persists, check the deployment actually
-finished on the host's dashboard.
+`roadtothegames.com` is a very different thing to send someone than a long default URL.
 
-**Old data after an update.** You rebuilt but uploaded the previous `dist`. The build
-prints the file names it wrote — check they match what you dragged.
+---
+
+## If you want the strictest security headers
+
+The app ships a `public/_headers` file with `frame-ancestors`, `X-Frame-Options` and
+friends. **GitHub Pages cannot set HTTP headers at all**, so that file is ignored there.
+Cloudflare Pages and Netlify both honour it.
+
+For this app that difference is small — there is no login and no sensitive action to
+hijack, so clickjacking has nothing to steal, and the in-page `Content-Security-Policy`
+still applies either way. Do not let it complicate your setup. If you later want it:
+
+1. Free account at **https://dash.cloudflare.com**
+2. **Workers & Pages** → **Create** → **Pages** → **Connect to Git** → pick the repository
+3. Build command `npm run build`, output directory `dist`
+
+Caveat: Cloudflare's build machines have Node but **not Python**, so the spreadsheet
+conversion would not run there. You would go back to running `npm run update` locally and
+committing the generated `src/data/*.json`, losing the upload-the-xlsx-in-a-browser trick.
+That is the real trade-off, and it is why GitHub Actions is the default here.
+
+---
+
+## The two-minute version
+
+Just want to see it live right now? Run `npm run build`, then drag the **`dist`** folder
+onto **https://app.netlify.com/drop**. You get a public address in about twenty seconds.
+Without an account it expires in an hour; sign up while it is open to keep it.
+
+Fine for showing someone today. Not a substitute for Step 1.
+
+---
+
+## When something looks wrong
+
+**The Actions run failed (red X).** Click it and read the first red step.
+*Convert the spreadsheet* failing means the workbook is malformed — a renamed sheet, a
+deleted column. The live site is untouched; fix the file and upload again.
+
+**The run went green but the site did not change.** Reload with Ctrl+Shift+R. `index.html`
+is set never to cache, but browsers can be stubborn.
+
+**A link into the app gives a 404.** Should not happen — the app uses `#` addresses
+(`/#/calendar`) exactly so that no server configuration is needed. If you see it, check
+nobody added a redirect rule that strips the `#`.
+
+**You want the previous version back.** Actions tab → the last good run → **Re-run all
+jobs**. That republishes exactly what was live before, in about two minutes.

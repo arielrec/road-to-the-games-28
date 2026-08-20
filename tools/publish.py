@@ -51,7 +51,7 @@ def main():
 
     if not git_out('remote'):
         print('\nNo remote is configured, so there is nowhere to push yet.')
-        print('See DEPLOY.md, step 2 — it is one command.')
+        print('See DEPLOY.md, step 1 — it is one command.')
         return
 
     try:

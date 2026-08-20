@@ -47,14 +47,17 @@ a week-long championship stored as one day, a far-future event with an invented 
 hundred is the failure this step exists to catch, and it warns you loudly if more than a
 tenth of the file disappears.
 
-## 3. Build and upload
+## 3. Publish
 
 ```
-npm run build
+npm run publish
 ```
 
-Upload the contents of `dist/` to wherever the app is hosted. That folder is the entire
-app — there is nothing else to deploy and no server to restart.
+It shows the same report, asks for confirmation, then commits and pushes. The live site
+rebuilds itself in two to three minutes — there is nothing to upload.
+
+**Or skip the terminal entirely**: replace the `.xlsx` through GitHub's website and the
+same pipeline runs by itself. See DEPLOY.md.
 
 ## If something goes wrong
 
