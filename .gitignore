@@ -11,3 +11,4 @@ data-issues.csv
 # Build outputs that get zipped for hand-delivery.
 olympic-app.zip
 road-to-the-games-site.zip
+*.mjs
